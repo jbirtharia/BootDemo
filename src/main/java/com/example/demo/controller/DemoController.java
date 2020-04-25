@@ -5,7 +5,6 @@ import com.example.demo.exception.RoomNotFoundException;
 import com.example.demo.util.EntityIdGenerator;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,9 +15,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/rooms")
 public class DemoController {
-
-    @Value("${message}")
-    String message;
 
     @Autowired
     List<RoomEntity> rooms;
