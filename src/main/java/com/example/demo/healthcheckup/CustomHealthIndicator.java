@@ -8,8 +8,6 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import java.util.Arrays;
-import java.util.List;
 
 
 @Component
@@ -34,9 +32,6 @@ public class CustomHealthIndicator implements HealthIndicator {
 
     @SneakyThrows
     private Boolean isServiceRunning(){
-        if(restTemplate.getForObject(main_url,RoomEntity[].class) == null)
-            return false;
-        else
-            return true;
+        return restTemplate.getForObject(main_url, RoomEntity[].class) != null;
     }
 }

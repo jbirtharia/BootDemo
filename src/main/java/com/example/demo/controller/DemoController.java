@@ -76,7 +76,7 @@ public class DemoController {
     }
 
     @DeleteMapping("/deleteRoom/{id}")
-    public ResponseEntity<RoomEntity> deleteRoom(@PathVariable("id") Integer id){
+    public ResponseEntity deleteRoom(@PathVariable("id") Integer id){
         Optional<RoomEntity> room = rooms.stream()
                 .filter(r -> r.getId().equals(id)).findAny();
         if(room.isPresent()) {
