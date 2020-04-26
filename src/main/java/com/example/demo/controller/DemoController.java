@@ -80,7 +80,7 @@ public class DemoController {
         Optional<RoomEntity> room = rooms.stream()
                 .filter(r -> r.getId().equals(id)).findAny();
         if(room.isPresent()) {
-            rooms.remove(room);
+            rooms.remove(room.get());
             return new ResponseEntity("Record Has Been Deleted",HttpStatus.ACCEPTED);
         }
         else
