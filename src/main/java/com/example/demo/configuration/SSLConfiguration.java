@@ -24,30 +24,22 @@ public class SSLConfiguration {
     @SneakyThrows
     public RestTemplate restTemplate(){
         TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-
         SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom()
                 .loadTrustMaterial(null, acceptingTrustStrategy)
                 .build();
-
         SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext,SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
         final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", new PlainConnectionSocketFactory())
                 .register("https", csf)
                 .build();
-
         final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(registry);
         cm.setMaxTotal(100);
-
         CloseableHttpClient httpClient = HttpClients.custom()
                 .setSSLSocketFactory(csf)
                 .setConnectionManager(cm)
                 .setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER)
                 .build();
-
-        HttpComponentsClientHttpRequestFactory requestFactory =
-                new HttpComponentsClientHttpRequestFactory();
-
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         requestFactory.setHttpClient(httpClient);
         return new RestTemplate(requestFactory);
     }

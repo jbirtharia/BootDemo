@@ -9,7 +9,6 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-
 @Component
 public class CustomHealthIndicator implements HealthIndicator {
 
