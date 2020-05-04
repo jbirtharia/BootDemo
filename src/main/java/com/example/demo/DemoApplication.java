@@ -1,12 +1,14 @@
 package com.example.demo;
 
-import com.example.demo.entity.RoomEntity;
+import com.example.demo.repository.RoomRepositoryHiber;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import java.util.ArrayList;
-import java.util.List;
 
+//Uncomment below line when wants to run using hibernate
+/*@SpringBootApplication(exclude = HibernateJpaAutoConfiguration.class)*/
 @SpringBootApplication
 public class DemoApplication {
 
@@ -14,14 +16,16 @@ public class DemoApplication {
 		SpringApplication.run(DemoApplication.class, args);
 	}
 
+
+	//Method for initial data populate
 	@Bean
-	public List<RoomEntity> getRooms()
-	{
-		List<RoomEntity> rooms = new ArrayList<>();
-		rooms.add(new RoomEntity(1,"red","101","large"));
-		rooms.add(new RoomEntity(2,"yellow","102","medium"));
-		rooms.add(new RoomEntity(3,"blue","103","small"));
-		rooms.add(new RoomEntity(4,"white","104","large"));
-		return rooms;
+	public CommandLineRunner demo(RoomRepositoryHiber repository){
+		return args -> {
+			/*repository.save(new RoomEntity("red","101","large"));
+			repository.save(new RoomEntity("yellow","102","medium"));
+			repository.save(new RoomEntity("blue","103","small"));
+			repository.save(new RoomEntity("white","104","large"));*/
+		};
 	}
+
 }

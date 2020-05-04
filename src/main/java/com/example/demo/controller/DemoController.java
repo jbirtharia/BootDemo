@@ -1,90 +1,57 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.RoomEntity;
-import com.example.demo.exception.RoomNotFoundException;
-import com.example.demo.util.EntityIdGenerator;
-import lombok.extern.java.Log;
+import com.example.demo.service.RoomService;
+import com.example.demo.util.ResponseGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
-import java.util.Optional;
 
-@Log
+@Slf4j
 @RestController
 @RequestMapping("/rooms")
 public class DemoController {
 
     @Autowired
-    List<RoomEntity> rooms;
+    private RoomService roomService;
 
     @Autowired
-    EntityIdGenerator entityIdGenerator;
+    private ResponseGenerator response;
+
 
     @GetMapping("/all")
     public ResponseEntity<List<RoomEntity>> getAllRooms(){
-      return new ResponseEntity<List<RoomEntity>>(rooms, HttpStatus.OK);
+        return response.getResponse(roomService.getAllRooms(), HttpStatus.OK);
     }
 
     @GetMapping("/findRoom/{id}")
     public ResponseEntity<RoomEntity> getRoom(@PathVariable("id") Integer id){
-        Optional<RoomEntity> room = rooms.stream()
-                .filter(r -> r.getId().equals(id)).findAny();
-        if(room.isPresent())
-            return new ResponseEntity<RoomEntity>(room.get(),HttpStatus.FOUND);
-        else
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Please Send Correct Room Number");
+        return response.getResponse(roomService.getRoomById(id),HttpStatus.FOUND);
     }
 
     @PostMapping("/add")
     public ResponseEntity<RoomEntity> saveRoom(@RequestBody RoomEntity roomEntity){
-        roomEntity.setId(entityIdGenerator.idGenerator(rooms));
-        rooms.add(roomEntity);
-        return new ResponseEntity<RoomEntity>(roomEntity,HttpStatus.CREATED);
+        roomService.saveRoom(roomEntity);
+        return response.getResponse(roomEntity,HttpStatus.CREATED);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<RoomEntity> updateRoom(@RequestBody RoomEntity roomEntity){
-        Optional<RoomEntity> oldRoom = rooms.stream()
-                .filter(room -> room.getId().equals(roomEntity.getId())).findAny();
-        if (oldRoom.isPresent()){
-            oldRoom.get().setBed(roomEntity.getBed());
-            oldRoom.get().setName(roomEntity.getName());
-            oldRoom.get().setNumber(roomEntity.getNumber());
-            return new ResponseEntity<RoomEntity>(roomEntity,HttpStatus.ACCEPTED);
-        }
-        else
-            throw new RoomNotFoundException("Room Not Found",HttpStatus.BAD_REQUEST);
+    public ResponseEntity updateRoom(@RequestBody RoomEntity roomEntity){
+       roomService.updateRoom(roomEntity);
+       return response.getResponse(roomEntity,HttpStatus.ACCEPTED);
     }
 
     @PatchMapping("/patchRoom/{id}")
-    public ResponseEntity patchRecord(@RequestBody RoomEntity roomEntity){
-        Optional<RoomEntity> oldRoom = rooms.stream()
-                .filter(room -> room.getId().equals(roomEntity.getId())).findAny();
-        if(oldRoom.isPresent()){
-            if(roomEntity.getBed()!=null)
-                oldRoom.get().setBed(roomEntity.getBed());
-            if(roomEntity.getName()!=null)
-                oldRoom.get().setName(roomEntity.getName());
-            if(roomEntity.getNumber()!=null)
-                oldRoom.get().setNumber(roomEntity.getNumber());
-            return new ResponseEntity("Record Has Been Patched",HttpStatus.ACCEPTED);
-        }
-        else
-            throw new RoomNotFoundException("Room Not Found",HttpStatus.BAD_REQUEST);
+    public ResponseEntity patchRecord(@PathVariable("id") Integer id,@RequestBody RoomEntity roomEntity){
+       roomService.roomPatch(id,roomEntity);
+       return response.getResponse();
     }
 
     @DeleteMapping("/deleteRoom/{id}")
-    public ResponseEntity deleteRoom(@PathVariable("id") Integer id){
-        Optional<RoomEntity> room = rooms.stream()
-                .filter(r -> r.getId().equals(id)).findAny();
-        if(room.isPresent()) {
-            rooms.remove(room.get());
-            return new ResponseEntity("Record Has Been Deleted",HttpStatus.ACCEPTED);
-        }
-        else
-            throw new RoomNotFoundException("Room Not Found",HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> deleteRoom(@PathVariable("id") Integer id){
+        roomService.deleteRoom(id);
+        return response.getResponse();
     }
-
 }
